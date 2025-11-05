@@ -174,7 +174,12 @@ function sendToSheet(wheelName, result){
     .catch(err => console.error('Error saving to sheet:', err));
 }
 
+// --- Spin wheel function ---
 function spinWheel(which) {
+    if(!canSpinToday(which)) {
+        alert("You can only spin this wheel once per day!");
+        return;
+    }
     if(isSpinning) return;
     isSpinning = true;
     document.getElementById('spinChores').disabled=true;
@@ -198,7 +203,8 @@ function spinWheel(which) {
             const selected = decisions[selIndex];
             const now = new Date().toISOString().slice(0,19).replace('T',' ');
             document.getElementById(wheel.historyId).innerHTML += `<div>${now}: ${selected}</div>`;
-            sendToSheet(which, selected); // still sends to Google Sheet
+            recordSpin(which, selected);
+            sendToSheet(which, selected); // <-- send result to Google Sheet
             isSpinning = false;
             document.getElementById('spinChores').disabled=false;
             document.getElementById('spinActivities').disabled=false;
